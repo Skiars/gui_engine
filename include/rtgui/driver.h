@@ -27,18 +27,96 @@
 #include <rtgui/list.h>
 #include <rtgui/color.h>
 
+/**
+ * graphic device control command
+ */
+#define RTGRAPHIC_CTRL_RECT_UPDATE      0
+#define RTGRAPHIC_CTRL_POWERON          1
+#define RTGRAPHIC_CTRL_POWEROFF         2
+#define RTGRAPHIC_CTRL_GET_INFO         3
+#define RTGRAPHIC_CTRL_SET_MODE         4
+#define RTGRAPHIC_CTRL_GET_EXT          5
+
+/* graphic deice */
+enum
+{
+    RTGRAPHIC_PIXEL_FORMAT_MONO = 0,
+    RTGRAPHIC_PIXEL_FORMAT_GRAY4,
+    RTGRAPHIC_PIXEL_FORMAT_GRAY16,
+    RTGRAPHIC_PIXEL_FORMAT_RGB332,
+    RTGRAPHIC_PIXEL_FORMAT_RGB444,
+    RTGRAPHIC_PIXEL_FORMAT_RGB565,
+    RTGRAPHIC_PIXEL_FORMAT_RGB565P,
+    RTGRAPHIC_PIXEL_FORMAT_BGR565 = RTGRAPHIC_PIXEL_FORMAT_RGB565P,
+    RTGRAPHIC_PIXEL_FORMAT_RGB666,
+    RTGRAPHIC_PIXEL_FORMAT_RGB888,
+    RTGRAPHIC_PIXEL_FORMAT_ARGB888,
+    RTGRAPHIC_PIXEL_FORMAT_ABGR888,
+    RTGRAPHIC_PIXEL_FORMAT_ARGB565,
+    RTGRAPHIC_PIXEL_FORMAT_ALPHA,
+    RTGRAPHIC_PIXEL_FORMAT_COLOR,
+};
+
+/**
+ * build a pixel position according to (x, y) coordinates.
+ */
+#define RTGRAPHIC_PIXEL_POSITION(x, y)  ((x << 16) | y)
+
+/**
+ * graphic device information structure
+ */
+struct rt_device_graphic_info
+{
+    rt_uint8_t  pixel_format;                           /**< graphic format */
+    rt_uint8_t  bits_per_pixel;                         /**< bits per pixel */
+    rt_uint16_t reserved;                               /**< reserved field */
+
+    rt_uint16_t width;                                  /**< width of graphic device */
+    rt_uint16_t height;                                 /**< height of graphic device */
+
+    rt_uint8_t *framebuffer;                            /**< frame buffer */
+};
+
+/**
+ * rectangle information structure
+ */
+struct rt_device_rect_info
+{
+    rt_uint16_t x;                                      /**< x coordinate */
+    rt_uint16_t y;                                      /**< y coordinate */
+    rt_uint16_t width;                                  /**< width */
+    rt_uint16_t height;                                 /**< height */
+};
+
+/**
+ * graphic operations
+ */
+struct rt_device_graphic_ops
+{
+    void (*set_pixel) (const char *pixel, int x, int y);
+    void (*get_pixel) (char *pixel, int x, int y);
+
+    void (*draw_hline)(const char *pixel, int x1, int x2, int y);
+    void (*draw_vline)(const char *pixel, int x, int y1, int y2);
+
+    void (*blit_line) (const char *pixel, int x, int y, rt_size_t size);
+};
+
+#define rt_graphix_ops(device)          ((struct rt_device_graphic_ops *)(device->user_data))
+
 /* graphic driver operations */
 struct rtgui_graphic_driver_ops
 {
-    /* set and get pixel in (x, y) */
-    void (*set_pixel)(rtgui_color_t *c, int x, int y);
-    void (*get_pixel)(rtgui_color_t *c, int x, int y);
+	/* set and get pixel in (x, y) */
+	void (*set_pixel)(rtgui_color_t* c, int x, int y);
+	void (*get_pixel)(rtgui_color_t* c, int x, int y);
 
-    void (*draw_hline)(rtgui_color_t *c, int x1, int x2, int y);
-    void (*draw_vline)(rtgui_color_t *c, int x , int y1, int y2);
+	void (*draw_hline)(rtgui_color_t* c, int x1, int x2, int y);
+	void (*draw_vline)(rtgui_color_t* c, int x, int y1, int y2);
+	void(*fill_rect)(rtgui_color_t* c, int x1, int y1, int x2, int y2);
 
-    /* draw raw hline */
-    void (*draw_raw_hline)(rt_uint8_t *pixels, int x1, int x2, int y);
+	/* draw raw hline */
+	void (*draw_raw_hline)(rt_uint8_t* pixels, int x1, int x2, int y);
 };
 
 /* graphic extension operations */

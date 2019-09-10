@@ -22,6 +22,7 @@
  * 2009-10-16     Bernard      first version
  */
 #include <rtgui/color.h>
+#include <rtgui/driver.h>
 #include <rtconfig.h>
 
 const rtgui_color_t red     = RTGUI_RGB(0xff, 0x00, 0x00);
