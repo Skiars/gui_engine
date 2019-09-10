@@ -27,6 +27,10 @@
 #include <rtgui/list.h>
 #include <rtgui/color.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /**
  * graphic device control command
  */
@@ -190,6 +194,10 @@ struct rtgui_dc* rtgui_graphic_driver_get_rect_buffer(const struct rtgui_graphic
 #endif
 
 rt_bool_t rtgui_graphic_driver_is_vmode(void);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif
 
